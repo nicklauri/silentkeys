@@ -17,6 +17,7 @@ pub fn handle_key_chattering_events() {
 
 fn handle_key_event(event: Event) {
     if let Some(caught_key) = buffer::should_send_backspace(&event) {
+        
         send_backspace();
         match event.event_type {
             EventType::KeyRelease(key) => {

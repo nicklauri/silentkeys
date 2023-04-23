@@ -13,6 +13,8 @@ windres = "*"
 
 [dependencies]
 anyhow = "1.0.70"
+atomic_enum = "0.2.0"
 fnv = "1.0.7"
 rdev = "0.5.2"
 tray-item = "0.7.1"
+winrt-notification = "0.5.1"

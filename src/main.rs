@@ -1,11 +1,10 @@
 #![allow(warnings)]
 use std::thread;
 
-use crate::system_tray::SystemTrayMessage;
-
 mod input;
-mod system_tray;
 mod buffer;
+mod noti;
+mod config;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
@@ -22,21 +21,9 @@ fn main() -> anyhow::Result<()> {
     Copyright by Nick Lauri (c) 2023\n\
     This is chattering keys ANNIHILATION!!!");
 
-    let rx = system_tray::init_system_tray()?;
-
     println!("info: listen for events");
 
-    thread::spawn(move || {
-        loop {
-            match rx.recv() {
-                Ok(SystemTrayMessage::Quit) => {
-                    println!("info: quit message received, cleaning up and exitting...");
-                    std::process::exit(0);
-                },
-                _ => {}
-            }
-        }
-    });
+    noti::app_is_running();
 
     input::handle_key_chattering_events();
 

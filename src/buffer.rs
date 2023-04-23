@@ -187,3 +187,9 @@ pub fn should_send_backspace(event: &Event) -> Option<KeyInfo> {
         }
     })
 }
+
+pub fn clear_map() {
+    KEY_PRESSED_MAP.with(|map| {
+        map.borrow_mut().clear();
+    })
+}
