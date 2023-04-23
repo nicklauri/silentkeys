@@ -93,6 +93,10 @@ impl KeyInfo {
     /// that we're doing this realtime.
     /// TODO: real function to calculate between two SystemTime.  
     fn is_pressed_too_quick(&self, after: Self) -> bool {
+        if self.just_pressed_after_awhile {
+            return false
+        }
+
         let self_elapsed_in_millis = match self.pressed_at.elapsed() {
             Ok(value) => value.as_millis(),
             Err(err) => {
@@ -100,7 +104,7 @@ impl KeyInfo {
                     "error: could not get elapsed value of system time: {:?}",
                     self.pressed_at
                 );
-                return false;
+                return false
             }
         };
 
@@ -175,13 +179,7 @@ pub fn should_send_backspace(event: &Event) -> Option<KeyInfo> {
         // else: update state in the map.
         map.insert(key, current);
 
-        let is_pressed_too_quick = last_key_state.is_pressed_too_quick(current);
-
-        if current.just_pressed_after_awhile && is_pressed_too_quick {
-            println!("info:")
-        }
-
-        if !current.just_pressed_after_awhile && is_pressed_too_quick {
+        if last_key_state.is_pressed_too_quick(current) {
             Some(last_key_state)
         }
         else {
