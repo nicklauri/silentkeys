@@ -1,0 +1,18 @@
+[package]
+name = "silentkeys"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.dev.package.rdev]
+opt-level = 3
+
+[build-dependencies]
+windres = "*"
+
+[dependencies]
+anyhow = "1.0.70"
+fnv = "1.0.7"
+rdev = "0.5.2"
+tray-item = "0.7.1"
