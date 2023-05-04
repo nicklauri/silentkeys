@@ -36,18 +36,25 @@ pub fn handle_key_chattering_events() {
 
 pub fn handle_key_homemade() {
     sys::windows::keyboard_event_listener(|ev| {
-        let event_type = match ev.state {
-            KeyState::Up => EventType::KeyRelease(ev.key),
-            KeyState::Down => EventType::KeyPress(ev.key),
+        let Some((current_key, caught_key)) = buffer::should_send_backspace_homemade(ev) else {
+            return
         };
 
-        let event = Event {
-            event_type,
-            time: ev.at,
-            name: None,
-        };
+        let caught_key_elapsed = caught_key.elapsed();
 
-        handle_key_event(event);
+        sys::windows::simulate_pressing_key(Key::Backspace);
+
+        match ev.state {
+            KeyState::Up => {
+                println!(
+                    "info: caught the chatter: {:?} (elapsed: {:?} - awhile: {})",
+                    ev.key, caught_key_elapsed, caught_key.just_pressed_after_awhile,
+                );
+            }
+            other => {
+                println!("info: unexpected caught chatter: {other:?}");
+            }
+        }
     });
 }
 

@@ -28,7 +28,7 @@ pub fn keyboard_event_listener(hookfn: KeyboardEventHookFn) -> Result<(), WIN32_
 
     if result.is_ok() {
         ctrlc::set_handler(move || {
-            drop(win::remove_keyboard_listener());
+            win::remove_keyboard_listener();
 
             println!("info: removed keyboard hook and exit.");
             std::process::exit(0);
@@ -263,7 +263,7 @@ mod win {
             dwExtraInfo: 0,
         };
 
-        let mut input: INPUT = INPUT {
+        let input: INPUT = INPUT {
             r#type: INPUT_KEYBOARD,
             Anonymous: INPUT_0 { ki: input_union },
         };

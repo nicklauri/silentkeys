@@ -2,6 +2,8 @@ use std::{
     cell::RefCell,
     collections::{HashMap, VecDeque},
     ops::{Deref, DerefMut},
+    sync::mpsc::{self, Receiver, Sender},
+    thread::{self, JoinHandle},
     time::{Duration, SystemTime},
 };
 
@@ -11,7 +13,7 @@ use rdev::{Event, EventType, Key};
 use crate::sys::event_type::{KeyState, KeyboardEvent};
 
 /// How long is too fast? It's sub-10ms, but 10ms to make sure.
-pub const PRESSED_TOO_FAST_IN_MS: u32 = 10;
+pub const PRESSED_TOO_FAST_IN_MS: u32 = 15;
 
 /// If the duration is bigger than 100ms, then it is awhile.
 pub const AWHILE: Duration = Duration::from_millis(100);
@@ -49,7 +51,7 @@ impl KeyInfo {
     fn should_ignore(&self) -> bool {
         use Key::*;
         const INCLUDED_KEYS: &'static [Key] = &[
-            ShiftLeft,
+            // ShiftLeft,
             Minus,
             Equal,
             KeyQ,
@@ -232,4 +234,47 @@ pub fn clear_map() {
     KEY_PRESSED_MAP.with(|map| {
         map.borrow_mut().clear();
     })
+}
+
+struct KeyQueue {
+    tx: Sender<KeyQueueItem>,
+    join_handle: Option<JoinHandle<()>>,
+}
+
+impl KeyQueue {
+    fn new() -> Self {
+        let (tx, rx) = mpsc::channel();
+
+        let join_handle = Some(Self::spawn_queue(rx));
+
+        Self { tx, join_handle }
+    }
+
+    fn spawn_queue(rx: Receiver<KeyQueueItem>) -> JoinHandle<()> {
+        let (delay_tx, delay_rx) = mpsc::channel::<KeyQueueItem>();
+        let sleep_thread = thread::spawn(move || {
+            // TODO:
+        });
+
+        thread::spawn(move || {
+            while let Ok(key) = rx.recv() {
+                //
+            }
+        })
+    }
+}
+
+impl Drop for KeyQueue {
+    fn drop(&mut self) {
+        self.join_handle
+            .take()
+            .expect("KeyQueue receiver thread should not be None!")
+            .join()
+            .expect("join KeyQueue receiver thread!");
+    }
+}
+
+struct KeyQueueItem {
+    info: KeyInfo,
+    wait: u32, // in ms
 }

@@ -1,8 +1,8 @@
 use rdev::Key;
 
-use super::{windows, event_type::SysEvent};
+use super::{event_type::SysEvent, windows};
 
-pub fn dispatch() {
+pub fn dispatch(key: Key) {
     todo!()
 }
 
